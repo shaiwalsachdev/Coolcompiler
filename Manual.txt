@@ -1,0 +1,207 @@
+
+coolc, a limited class use COOL compiler v0.01
+Federico Pellegrin <drzeus@infis.univ.trieste.it>
+
+
+
+
+Table of Contents:
+==================
+  1) Introduction
+  2) Supported COOL features
+  3) Description of the COOL extensions used
+  4) Compiling and using coolc
+  5) Files description
+  6) Brief implementation description
+
+
+1) Introduction
+===============
+coolc is a limited class use COOL compiler written in C using LEX and 
+YACC. coolc will perform an almost complete static type-check on the 
+given file and generate the intermediate code in a three-address 
+language for a limited subset of the COOL constructs. The three-address 
+code will then be interpreted by the built-in interpreter and the 
+output displayed to the user. 
+
+
+
+2) Supported COOL features
+==========================
+coolc doesn't fully support all the COOL language constructs. coolc 
+main features are centered around the developing of the dispatch 
+construct of COOL:
+			ID.ID():void
+
+Therefore, briefly, coolc is able to handle:
+ - definition of classes without inheritance
+ - definition of attributes of various types in classes 
+ - definition of methods in classes
+ - definition of dispatching methods in methods body without parameters 
+   and without a return value
+
+To make the output of the generated programs more readable and explicit 
+an additional command "print" has been added to the COOL language. This 
+command will simply display on screen a defined constant string 
+(please refer to the next sections for a definition of this new 
+language construct).
+coolc will also generate and execute code for constant expressions 
+(both integer and boolean). Execution of such code will just modify 
+the internal status of the interpreter but won't be used by further 
+constructs, since the return values aren't really handled.
+coolc will additionally also construct a partial semantic tree of the 
+code examined and perform some basic type-checking operations:
+ - accordance between return value and method return type definition
+ - compatibility of types in variable assignments
+ - presence of a Bool expression for NOT/IF/WHILE arguments
+ - redefinition of classes
+ - redefinition of methods and attributes inside classes
+ - use of undeclared variables and methods
+
+Pay attention that just the dispatch code, the non-standard "print" 
+and the constant expression will generate proper code to be executed by 
+the interpreter. All the other constructs can be type-checked but will 
+not be transformed into intermediate code (and later executed) if not 
+maybe partially, generating unwanted execution code.
+The basic Bool and Int COOL classes has been defined in coolc even if, 
+being most of the expressions operators missing, they are quite simply 
+managed.
+
+
+
+3) Description of the COOL extensions used
+==========================================
+coolc will receive in input an extended COOL language that includes the 
+"print" command. It's syntax can be expressed as:
+			print "<string>"
+
+where <string> is a string of alphanumeric and punctuation characters. 
+For the type-checking features it has been assumed that a "print" 
+construct will always return a value of the basic type Int with the 
+<string> length as value.
+
+
+
+4) Compiling and using coolc
+============================
+coolc compilation requires LEX, YACC, the GNU C compiler and some 
+other GNU tools. On most systems compilation should be simply carried 
+out executing
+			make
+
+This will generate the executable file coolc. This executable can be 
+run and the program can be passed to its standard input. Please check 
+the examples/ directory for some ready COOL examples.
+coolc will in order:
+ -) Compile the given program (if no errors occour) into the 
+    intermediate three-address code and build some structures, like the 
+    symbol table, needed at runtime.
+ -) Execute the three address code with the internal interpreter using 
+    the generated support data.
+
+coolc will generate on the standard output serveral informations in 
+this order:
+ -) Compilation type-checking error informations. If the program passed 
+    contains syntax errors or type errors coolc will try to inform the 
+    user about them in a complete way and then exit.
+ -) Symbol table informations. This will give the possibility to the 
+    user to understand how all the symbols in the compiled programs 
+    have been organized and how they interact with each other. Each 
+    entry is composed by a quadruple and the symbol itself. The first 
+    column contains the symbol table OID to be consequently used, the 
+    second column contains the nesting number of the object described, 
+    the third column defines the object type of the symbol (0 a class, 
+    1 a method, 2 an attribute, 4 an argument to a method, 5 a constant 
+    string) and the fourth column contains the data type of the symbol 
+    as a reference to the symbol table itself (so classes will have a 
+    data type pointing to themselves). The constant strings will have a 
+    data type of -1.
+ -) Classlist structure informations. This will give the possibility to 
+    the user to understand which classes have been detected and which 
+    attributes and methods are defined in each (as references to the 
+    symbol table). 
+ -) Generated code listing. The three-address generated code will be 
+    displayed here along with a line counter useful for understanding 
+    call codes. After the code generated also the data segment 
+    generated (containing the printable strings) will be displayed.
+ -) Entry point informations. If the object Main is present and it has 
+    a method main(), then this is the starting point of the COOL 
+    program and the line counter for this will be used as the initial 
+    program counter by the interpreter. Otherwise the compiler will 
+    issue a warning of a missing Main::main() function and will force 
+    the interpreter to start from the real physical beginning of the 
+    code (this will most probably lead to an uncorrect execution).
+ -) Cleanup informations. Before executing the interpreter the compiler 
+    support structures (the classlist and the symbol table) will be 
+    destroyed to show the indipendence of the code with the support 
+    informations. 
+ -) Interpreter output. This is what the final user would like to see 
+    from our coolc system: the results of the interpreted code derived 
+    from the COOL source compilation.
+Additionally the interpreter will generate a debug text file named 
+out-int.txt containing the execution sequence of the interpreter. Each 
+line consist of the current program counter (PC) value and a 
+description of the action being executed. When instructions that 
+require an activation record are executed (_call_ and _return_) the 
+interpreter will also dump the stack contents for further examination 
+of the control flow.
+
+
+
+5) Files description
+====================
+Each source and header file is provided with extensive comments about 
+the coolc structure. Please check first the header files for a brief 
+description of each routine. Briefly:
+ - codegen.c/.h  : contain the code generation primitives.
+ - coolc.y       : input for YACC containing the syntax definition and 
+		   the semantic operations to perform.
+ - inter.c/.h    : contain the interpreter routines and structures.
+ - lex.l	 : input for LEX containing the lexical definitions 
+		   required by COOL language with our print extension.
+ - Makefile	 : the building script.
+ - Manual.txt	 : this file
+ - nodes.c/.h	 : contain the code for partial semantic tree nodes 
+		   generation and for the class list management.
+ - symbol.c/.h	 : contain the code for symbol table management.
+
+The directory examples/ contains some ready-to-run examples showing 
+various aspects of coolc. Please refeer to the README file in the 
+directory for more details.
+
+
+
+6) Brief implementation description
+===================================
+The coolc symbol table is implemented as a hash table of buckets of 
+symbols entry. The hash function is simply a sum of the ASCII codes of 
+the characters composing each entry. On a hash conflict a list will be 
+generated and subsequentially used. To each entry an OID (object 
+identifier) is assigned to refeer to objects in a fast way but still 
+without dealing entirely with pointers (which would not be so readable 
+to the user on the debug informations). This must be of course unique 
+and is generated multiplying a constant to the hash function result 
+and adding the position in the bucket. This of course implies a 
+compile-time setting to limit the maximum number of entries that can be 
+present in a bucket via the MAX_SYM define. The 
+actual symbol table contains just the informations we strictly need to 
+execute all the designed operations and should be quite expanded in a 
+complete COOL compiler package. For constant strings used by our 
+additional "print" instruction a small optimization has been inserted: 
+if the same string is already present elsewhere in the code (so it is 
+already present in the symbol table) then it won't be reinserted into 
+the symbol table (and data memory segment). Simply it will be 
+referenced by two or more users of the string.
+The coolc interpreter is a simulated stack based machine. It supports 
+the basic commands needed for flow control management, namely a "call" 
+and a "return" instruction. The activation record is implemented using 
+a list simulating the stack. The activation record contains just the 
+return address of the next "return" call but could be easily expanded 
+to contain other needed structures. The coolc interpreter will also 
+keep track constantly of the last evalutated expression which is, by 
+COOL language specification, the actual value of the whole construct. 
+So at each "return" execution we can (and we do so in the interpreter 
+debug file) analyze the content of this value which could be, in a 
+complete COOL compiler, the return value of the method.
+
+

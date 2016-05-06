@@ -1,0 +1,10 @@
+class Main is 
+	a : Int;
+	b : Int;
+	c : Int;
+	main (): Int is 
+		a <- 1;
+		b <- 2;
+		print "HELLO WORLD";		
+	end;
+end;

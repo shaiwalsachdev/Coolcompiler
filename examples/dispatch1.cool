@@ -1,0 +1,26 @@
+
+class Testa is
+	method(): Int is
+		print "Testa::method()";
+	end;	
+end;
+
+class Testb is 
+ 	method: Testa;
+
+	method():Int is 
+		begin
+			print "Testb::method()";
+			method.method();
+		end;
+	end;
+end;
+
+class Main is
+	tvar: Testb;
+
+	main():Int is
+		tvar.method();		
+	end;
+end;
+

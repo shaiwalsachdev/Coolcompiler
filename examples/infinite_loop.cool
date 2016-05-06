@@ -1,0 +1,17 @@
+class Infinite is
+	infi: Infinite;
+
+	endless(): Int is
+		print "Infinite loop.... Press CTRL-C to finish";
+		infi.endless();
+	end;
+end;
+
+class Main is 
+	infi: Infinite;
+
+	main (): Int is 
+		print "Now warping";
+		infi.endless();
+	end;
+end;

@@ -1,0 +1,8 @@
+PC	Description
+0:	Entered in a method
+1:	Evalutating constant 1
+2:	Evalutating constant 2
+3:	Printing string "HELLO WORLD" to screen
+						Current Stack: 
+4:	Returning to -1 retrieved from stack, return value should be 11
+END	Return address -1: end of program reached

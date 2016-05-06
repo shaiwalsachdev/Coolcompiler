@@ -1,0 +1,53 @@
+class Testc is
+	method(): Int is
+		print "inside Testc::method()";
+	end;
+end;
+
+
+class Testa is
+	varc: Testc;
+	method: Testc;
+
+	method(): Int is
+		print "Testa::method() says 10";
+		print "optimized repeated string";		
+		10;
+	end;	
+
+	method2(): Int is
+		print "optimized repeated string";		
+		10;
+		varc.method();
+		print "leaving Testa::method2";
+		1;
+	end;	
+end;
+
+class Testb is 
+ 	var1: Testa;
+
+	method():Int is 
+		begin
+			var1.method();
+			var1.method2();			
+			print "almost leaving Testb";
+			35;
+		end;
+	end;
+end;
+
+class Main is
+	tvar: Testb;
+	qvar: Testa;
+	pvar: Testa;
+	
+	main():Int is
+		print "starting main";
+		tvar.method();
+		qvar.method2();
+		pvar.method();
+		print "ending main";
+	end;
+end;
+

@@ -1,0 +1,16 @@
+class Diff is
+	main(): Int is
+		print "This strings will use just one memory entry";
+		print "This strings will use just one memory entry";
+		print "This strings will use just one memory entry";
+	end;
+end;
+
+class Main is 
+	main (): Int is 
+		print "This strings will use just one memory entry";
+		print "This strings will use just one memory entry";
+		print "This strings will use just one memory entry";
+		print "This strings will use just one memory entry";
+	end;
+end;

@@ -1,0 +1,79 @@
+
+class Prova is 
+ 	var : Prova;
+ 	varp : Prova;
+	varpl: Bool;
+	boolv: Bool;
+	varpi: Int;
+
+	meet2():Bool is 
+		varpi;
+	end;
+
+	method():Prova is 
+		begin
+			print "in Prova::method()";
+			var.meet2();
+			varpl <- not true;
+			if varpi then
+				begin
+					varpl <- 10;
+				end
+			else
+				begin
+					varpl <- not 10;
+				end
+			fi;
+	
+			while varpi loop 
+				begin
+					boolv <- false;
+					varp;
+				end
+			pool;
+		end;
+	end;
+end;
+
+class Test is
+	probj: Prova;
+
+	testmet():Int is
+		print "in Test::testmet()";
+		probj.method2();			
+		probjunex.method();			
+		if 10 then
+			66
+		else
+			36
+		fi;
+	end;
+
+	testmet():Bool is
+		true;
+	end;
+
+end;
+
+class Test is 
+end;
+
+class Main is  
+	mainvar : Bool;
+	var2 : Bool;
+	myprova : Prova;
+	mytest: Test;
+	mytest: Bool;
+
+	main(): Int is
+		print "in Main::main()";
+		mainvar <- mytest;
+		myprova.method();
+		myprova.meet2();
+		mytest.testmet();
+		myprova.method();
+		1;
+	end;
+end;
+
+
